@@ -3,3 +3,8 @@
 
 # ローカル作業用スクラッチ（.claude/commands/status.md 参照）
 problems.md
+
+# frontend
+node_modules/
+dist/
+*.tsbuildinfo

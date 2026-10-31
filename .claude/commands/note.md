@@ -1,5 +1,5 @@
 ---
-description: 思いついたことを取りこぼさず記録する（まず §0 へ落とし、その後で行き先を提案）
+description: 把想到的事情不遗漏地记下来（先落到 §0，再建议去处）
 ---
 
 Capture what the user just thought of: **$ARGUMENTS**
@@ -25,7 +25,7 @@ Read what's already in `docs/open-questions.md` and `docs/feature-list.md`, then
 | The note is… | Destination | Test |
 |---|---|---|
 | A question — "should we do X?", "how should X work?" — **not yet answered** | `open-questions` **§1** if it is blocking work right now, else **§2** | **It contains a question** |
-| Waiting on the customer / 業務 side before it can be decided | Same as above; set 決められるのは to `人（業務）` and note 🗣 客先確認待ち | A question **whose decider is not the user** |
+| Waiting on someone other than the user before it can be decided | Same as above; set 决定者 to that person | A question **whose decider is not the user** |
 | A feature that is **agreed** but simply not built yet | **`docs/feature-list.md`** as a ⬜ row in the right section | **No question** — only scheduling |
 | Something already shipped as a knowing compromise | `open-questions` **§3** as a new `T-xxx` | It describes **current behaviour**, with a repayment point |
 | A bug — the requirement is right, the code isn't | Not here. Say so: this is a **B-class** change → `docs/changes/<slug>/tasks.md` | The written requirement is already correct |
