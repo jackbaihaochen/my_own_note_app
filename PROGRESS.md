@@ -8,19 +8,26 @@
 
 ## Current Status
 
-- 2026-10-31：已部署到线上（见上）。部署时发现并修复首次访问白屏（已提交）。
-- 2026-10-31：第一版编辑器 [mvp-editor](docs/changes/mvp-editor/proposal.md) 已实现；在其上又完成了 [minimap-live-highlight](docs/changes/minimap-live-highlight/proposal.md)（缩略图 + 代码块输入时高亮）。两者已一起提交到分支 `feat/mvp-editor`（未推送、未合并到 main）。build / lint / 8 项单元测试通过。mvp-editor 等用户确认两项手动检查后执行 `/sync`。
+- 2026-10-31：Phase 1 完成。[mvp-editor](docs/changes/archive/2026-10-31-mvp-editor/proposal.md) 与 [minimap-live-highlight](docs/changes/archive/2026-10-31-minimap-live-highlight/proposal.md) 已 sync 进 [docs/specs/](docs/specs/README.md) 并归档，已部署到线上（见上），`feat/mvp-editor` 合并到 main（未推送）。没有进行中的变更。
 
 ## Blockers
 
-- 待用户手动确认：FILE-02 系统打开 / 保存对话框与真实磁盘读写；TXT-06 从剪贴板粘贴图片。自动化环境做不到这两项。
+- 无。
 
 ## Plan
 
-- [ ] Phase 1：第一版编辑器（mvp-editor）——向右布局、富文本与代码、本地文件、xmind 导入（实现完成，待手动确认与 `/sync`）
+- [x] Phase 1：第一版编辑器（mvp-editor）——向右布局、富文本与代码、本地文件、xmind 导入（含缩略图、实时高亮；已上线）
 - [ ] Phase 2：按实际使用反馈处理 open-questions §2（待定）
 
 ## Completed
+
+### 2026-10-31 sync：mvp-editor + minimap-live-highlight
+
+- 用户确认 FILE-02（系统对话框 + 真实磁盘读写）与 TXT-06（粘贴图片）手动检查正常，mvp-editor 最后一项验收勾上。
+- 需求并入 spec：[map.md](docs/specs/map.md) MAP-01〜06、[text.md](docs/specs/text.md) TXT-01〜06（TXT-04 为修改后的版本）、[file.md](docs/specs/file.md) FILE-01〜04。
+- 两个变更归档到 `docs/changes/archive/2026-10-31-*`；更新 feature-list（全部 ✅）、sdd-workflow §5、specs/README；open-questions T-002 备注改为部署后的现状。
+- 验证：build / lint / test 8/8 通过。
+- 分支：`feat/mvp-editor`（已提交），合并到 main（未推送）。
 
 ### 2026-10-31 部署到 S3 + CloudFront
 

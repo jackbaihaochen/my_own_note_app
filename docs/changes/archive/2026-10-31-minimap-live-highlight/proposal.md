@@ -2,9 +2,9 @@
 
 | 项 | 内容 |
 |---|---|
-| 状态 | 🚧 实现中 |
+| 状态 | ✅ 完成（2026-10-31 已 sync 到 [specs](../../../specs/README.md)） |
 | 对象 spec | `MAP`（新增 MAP-06）、`TXT`（修改 TXT-04） |
-| 分支 | `feat/mvp-editor`（mvp-editor 尚未提交，暂叠在同一工作区） |
+| 分支 | `feat/mvp-editor`（与 mvp-editor 同一分支） |
 | 批准 | ✅ 2026-10-31 用户批准 |
 
 ## 为什么（起因）
