@@ -34,16 +34,28 @@ export default function App() {
   }
 
   useEffect(() => {
-    const mm = createMindMap(containerRef.current!, newMapData())
-    mindMapRef.current = mm
-    resetBaselineAfterRender(mm)
-    mm.on('data_change', () => {
-      if (baselineRef.current !== null) setDirty(snapshot() !== baselineRef.current)
+    const el = containerRef.current!
+    let mm: MindMap | null = null
+    // In the production build the stylesheet can apply after this runs, leaving the container
+    // 0×0 (the library refuses that), so create the map once the container has a size
+    const observer = new ResizeObserver(() => {
+      if (mm || !el.clientWidth || !el.clientHeight) return
+      observer.disconnect()
+      mm = createMindMap(el, newMapData())
+      mindMapRef.current = mm
+      resetBaselineAfterRender(mm)
+      mm.on('data_change', () => {
+        if (baselineRef.current !== null) setDirty(snapshot() !== baselineRef.current)
+      })
+      setMindMap(mm)
+      // handle for inspecting the map from the browser console during development
+      if (import.meta.env.DEV) Object.assign(window, { mindMap: mm })
     })
-    setMindMap(mm)
-    // handle for inspecting the map from the browser console during development
-    if (import.meta.env.DEV) Object.assign(window, { mindMap: mm })
-    return () => mm.destroy()
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      mm?.destroy()
+    }
   }, [])
 
   const loadMap = useCallback((data: MapFile, name: string, handle: FileSystemFileHandle | null, unsaved = false) => {

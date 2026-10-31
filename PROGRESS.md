@@ -4,8 +4,11 @@
 
 启动：`cd frontend && npm install && npm run dev`，用 Chrome 打开 http://localhost:5173。
 
+线上版：https://d3s7em05htk44d.cloudfront.net/mindmap/（S3 `my-htmls-yeah/mindmap/` + 已有的 CloudFront，部署方式见 `docs/decisions.md`「部署」）。
+
 ## Current Status
 
+- 2026-10-31：已部署到线上（见上）。部署时发现并修复首次访问白屏（已提交）。
 - 2026-10-31：第一版编辑器 [mvp-editor](docs/changes/mvp-editor/proposal.md) 已实现；在其上又完成了 [minimap-live-highlight](docs/changes/minimap-live-highlight/proposal.md)（缩略图 + 代码块输入时高亮）。两者已一起提交到分支 `feat/mvp-editor`（未推送、未合并到 main）。build / lint / 8 项单元测试通过。mvp-editor 等用户确认两项手动检查后执行 `/sync`。
 
 ## Blockers
@@ -18,6 +21,13 @@
 - [ ] Phase 2：按实际使用反馈处理 open-questions §2（待定）
 
 ## Completed
+
+### 2026-10-31 部署到 S3 + CloudFront
+
+- 复用账号里已有的公开桶 `my-htmls-yeah` 与 CloudFront `d3s7em05htk44d.cloudfront.net`（已强制 HTTPS），放进 `mindmap/` 前缀，不动桶里其他内容。用 `--base=./` 构建；`assets/` 长缓存，`index.html` 设 `no-cache`，更新时不必清 CloudFront 缓存。
+- 发现并修复：首次访问（无缓存）时白屏。生产构建里 JS 可能先于样式表生效执行，画布容器为 0×0，库直接抛错。改为用 `ResizeObserver` 等容器有尺寸后再创建导图。用旧 / 新两版 JS 在「样式表延迟 800ms」的条件下对照：旧版报错白屏，新版正常。
+- 验证：tsc / lint / test 8/8 通过；线上页面 HTTPS、File System Access API 可用，新建子主题、输入、未保存标记、缩略图正常。
+- 分支：`feat/mvp-editor`（已提交）。
 
 ### 2026-10-31 minimap-live-highlight 实现
 
