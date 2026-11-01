@@ -4,6 +4,15 @@
 
 ## Completed
 
+### 2026-10-31 minimap-live-highlight 实现
+
+- 缩略图（MAP-06）：启用库的 MiniMap 插件，新组件 `MiniMapPanel`，支持平移联动、点击跳转、拖动视口框、收起 / 展开。
+- 代码块输入时高亮（TXT-04 修改）：启用 Quill syntax 模块（150ms），保存前在 `beforeHideRichTextEdit` 中清掉高亮标记，数据格式不变；工具栏切换语言后强制重算高亮。
+- 补丁扩展：白名单加 `code-token`、modules 读取 `syntax` 配置；回归中发现 Shift+Enter 继承缩进失效（高亮把一行拆成多个片段），改为按整行取缩进后通过。
+- 验证：build / lint / test 8/8 通过；内置浏览器中用 K8s 导图验证了 MAP-06、TXT-04，并回归了 Tab / Shift+Tab、继承缩进、复制、数据格式；全新 `npm ci` 时补丁自动应用。
+- jsdom 降到 29.1.1：30.x 要求 Node 24.15 以上，用户的 Node 24.7 安装时会报 EBADENGINE。
+- 分支：`feat/mvp-editor`（已提交）。
+
 ### 2026-10-31 mvp-editor 实现
 
 - `frontend/`：Vite 8 + React 19 + TypeScript 7，依赖精确锁版本；simple-mind-map 0.14.0-fix.3 + patch-package 补丁（格式白名单、代码块换行继承缩进、复制保留换行），全新 `npm ci` 时自动应用。

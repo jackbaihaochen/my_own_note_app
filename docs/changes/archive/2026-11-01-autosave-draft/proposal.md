@@ -2,8 +2,8 @@
 
 | 项 | 内容 |
 |---|---|
-| 状态 | 🚧 实现中 |
-| 对象 spec | [`FILE`](../../specs/file.md)（新增 FILE-05、FILE-06，修改 FILE-03） |
+| 状态 | ✅ 完成（2026-11-01 已 sync 到 [specs](../../../specs/README.md)） |
+| 对象 spec | [`FILE`](../../../specs/file.md)（新增 FILE-05、FILE-06，修改 FILE-03） |
 | 分支 | `feat/autosave-draft` |
 | 批准 | ✅ 2026-11-01 用户批准 |
 

@@ -8,8 +8,8 @@
 
 ## Current Status
 
-- 2026-11-01：[autosave-draft](docs/changes/autosave-draft/proposal.md)（浏览器内自动保存与恢复）已实现并部署，在分支 `feat/autosave-draft`（已提交，未合并到 main）。待：用户在线上确认真实文件读写、`/sync`、合并。
-- 2026-10-31：Phase 1 完成。[mvp-editor](docs/changes/archive/2026-10-31-mvp-editor/proposal.md) 与 [minimap-live-highlight](docs/changes/archive/2026-10-31-minimap-live-highlight/proposal.md) 已 sync 进 [docs/specs/](docs/specs/README.md) 并归档，已部署到线上（见上），`feat/mvp-editor` 合并到 main（未推送）。没有进行中的变更。
+- 2026-11-01：[autosave-draft](docs/changes/archive/2026-11-01-autosave-draft/proposal.md)（浏览器内自动保存与恢复）已上线、sync 进 [file.md](docs/specs/file.md) 并归档，`feat/autosave-draft` 合并到 main（未推送）。没有进行中的变更。
+- 2026-10-31：Phase 1 完成。[mvp-editor](docs/changes/archive/2026-10-31-mvp-editor/proposal.md) 与 [minimap-live-highlight](docs/changes/archive/2026-10-31-minimap-live-highlight/proposal.md) 已 sync 进 [docs/specs/](docs/specs/README.md) 并归档，已部署到线上（见上），`feat/mvp-editor` 已合并到 main 并推送。
 
 ## Blockers
 
@@ -21,6 +21,12 @@
 - [ ] Phase 2：按实际使用反馈处理 open-questions §2（待定）
 
 ## Completed
+
+### 2026-11-01 sync：autosave-draft
+
+- 用户在线上版用真实文件确认 FILE-05（打开 → 修改 → 关闭再打开 → Cmd+S 写回）。
+- [file.md](docs/specs/file.md)：新增 FILE-05、FILE-06，FILE-03 改为不弹离开确认。归档到 `docs/changes/archive/2026-11-01-autosave-draft/`；feature-list ✅；open-questions 移出 Q-004，新增 Q-007（多标签页同时编辑的草稿冲突）。
+- 验证：build / lint / test 10/10 通过。分支 `feat/autosave-draft`（已提交），合并到 main（未推送）。
 
 ### 2026-11-01 autosave-draft 实现
 
@@ -49,17 +55,9 @@
 - 验证：tsc / lint / test 8/8 通过；线上页面 HTTPS、File System Access API 可用，新建子主题、输入、未保存标记、缩略图正常。
 - 分支：`feat/mvp-editor`（已提交）。
 
-### 2026-10-31 minimap-live-highlight 实现
-
-- 缩略图（MAP-06）：启用库的 MiniMap 插件，新组件 `MiniMapPanel`，支持平移联动、点击跳转、拖动视口框、收起 / 展开。
-- 代码块输入时高亮（TXT-04 修改）：启用 Quill syntax 模块（150ms），保存前在 `beforeHideRichTextEdit` 中清掉高亮标记，数据格式不变；工具栏切换语言后强制重算高亮。
-- 补丁扩展：白名单加 `code-token`、modules 读取 `syntax` 配置；回归中发现 Shift+Enter 继承缩进失效（高亮把一行拆成多个片段），改为按整行取缩进后通过。
-- 验证：build / lint / test 8/8 通过；内置浏览器中用 K8s 导图验证了 MAP-06、TXT-04，并回归了 Tab / Shift+Tab、继承缩进、复制、数据格式；全新 `npm ci` 时补丁自动应用。
-- jsdom 降到 29.1.1：30.x 要求 Node 24.15 以上，用户的 Node 24.7 安装时会报 EBADENGINE。
-- 分支：`feat/mvp-editor`（已提交）。
-
 | 日期 | 摘要 |
 |---|---|
+| 2026-10-31 | minimap-live-highlight 实现：缩略图 + 代码块输入时高亮（详见 history.md） |
 | 2026-10-31 | mvp-editor 实现：第一版编辑器，补丁 + 浏览器逐条验证（详见 history.md） |
 | 2026-10-31 | 项目启动与文档骨架：确定方向、spike、建立 docs 骨架（详见 history.md） |
 | — | 更早的条目滚动到 [docs/history.md](docs/history.md) |
