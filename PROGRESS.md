@@ -21,6 +21,10 @@
 
 ## Completed
 
+### 2026-11-01 节点文字按单词换行（C 类）
+
+- 库给节点文字设了 `word-break: break-all`，英文单词和行内代码会在行尾被拆开（如 `de` / `fault`）。`styles.css` 覆盖为按单词换行，放不下的超长串才强制断开；渲染节点与编辑框一致。K8s 导图 137 个节点检查无拆词、无溢出；build / lint / test 8/8 通过。分支 `main`（已提交，已部署）。
+
 ### 2026-10-31 sync：mvp-editor + minimap-live-highlight
 
 - 用户确认 FILE-02（系统对话框 + 真实磁盘读写）与 TXT-06（粘贴图片）手动检查正常，mvp-editor 最后一项验收勾上。
@@ -53,12 +57,7 @@
 - FILE-04 的验证数据从「106」改为文件里的实际主题数 96（截图里的 XMind 显示 106，用户提供的文件里是 96）。
 - 分支：`feat/mvp-editor`（已提交）。
 
-### 2026-10-31 项目启动与文档骨架
-
-- 确定方向：基于 simple-mind-map、纯前端本地网页、Chromium、文档用中文（见 `docs/decisions.md`）。
-- spike（临时目录，未入库）：验证了行内代码、代码块、highlight.js 高亮、编辑往返、JSON 往返、代码块语言保留、粘贴保留缩进；发现 `smmVersion` 缺失会清除富文本样式、编辑态复制会把多行代码压成一行（需补丁）。
-- 建立 `docs/` 骨架；`.claude/commands` 改为中文文档约定、检查命令改为 npm；`.claude/launch.json` 删除不用的 `backend` 配置。
-
 | 日期 | 摘要 |
 |---|---|
+| 2026-10-31 | 项目启动与文档骨架：确定方向、spike、建立 docs 骨架（详见 history.md） |
 | — | 更早的条目滚动到 [docs/history.md](docs/history.md) |

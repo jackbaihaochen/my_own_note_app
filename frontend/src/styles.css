@@ -175,6 +175,15 @@ body,
   margin: 0;
 }
 
+/* the library sets word-break: break-all, which splits English words and inline code anywhere;
+   wrap at word boundaries and only break a word that can't fit on a line by itself.
+   `html` raises specificity above the library's stylesheet, which is injected after ours */
+html .smm-richtext-node-wrap,
+html .ql-editor {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
 .smm-richtext-node-wrap code,
 .ql-snow .ql-editor code {
   color: inherit;
