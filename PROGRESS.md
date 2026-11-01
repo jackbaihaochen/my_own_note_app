@@ -8,8 +8,8 @@
 
 ## Current Status
 
-- 2026-11-01：[ui-language](docs/changes/ui-language/proposal.md)（界面中英双语与语言设置）已实现并部署，在分支 `feat/ui-language`（已提交，未合并到 main）。待：线上确认、`/sync`、合并。main 上 autosave-draft 的 2 个提交尚未推送。
-- 2026-11-01：[autosave-draft](docs/changes/archive/2026-11-01-autosave-draft/proposal.md)（浏览器内自动保存与恢复）已上线、sync 进 [file.md](docs/specs/file.md) 并归档，`feat/autosave-draft` 合并到 main（未推送）。没有进行中的变更。
+- 2026-11-01：[ui-language](docs/changes/archive/2026-11-01-ui-language/proposal.md)（界面中英双语与语言设置）已上线、sync 进 [ui.md](docs/specs/ui.md) 并归档；`feat/ui-language`、`feat/autosave-draft` 均已合并到 main 并推送。没有进行中的变更。
+- 2026-11-01：[autosave-draft](docs/changes/archive/2026-11-01-autosave-draft/proposal.md)（浏览器内自动保存与恢复）已上线、sync 进 [file.md](docs/specs/file.md) 并归档。
 - 2026-10-31：Phase 1 完成。[mvp-editor](docs/changes/archive/2026-10-31-mvp-editor/proposal.md) 与 [minimap-live-highlight](docs/changes/archive/2026-10-31-minimap-live-highlight/proposal.md) 已 sync 进 [docs/specs/](docs/specs/README.md) 并归档，已部署到线上（见上），`feat/mvp-editor` 已合并到 main 并推送。
 
 ## Blockers
@@ -22,6 +22,12 @@
 - [ ] Phase 2：按实际使用反馈处理 open-questions §2（待定）
 
 ## Completed
+
+### 2026-11-01 sync：ui-language
+
+- 线上确认 UI-01、UI-02（默认英语、旧草稿未命名显示为 Untitled、切到中文即时生效且内容不变）。
+- 新建 [ui.md](docs/specs/ui.md)（UI-01、UI-02）；归档到 `docs/changes/archive/2026-11-01-ui-language/`；sdd-workflow §5、specs/README、feature-list 更新。
+- 验证：build / lint / test 12/12 通过。分支 `feat/ui-language`（已提交），合并到 main 并推送。
 
 ### 2026-11-01 ui-language 实现
 
@@ -48,16 +54,9 @@
 
 - 库给节点文字设了 `word-break: break-all`，英文单词和行内代码会在行尾被拆开（如 `de` / `fault`）。`styles.css` 覆盖为按单词换行，放不下的超长串才强制断开；渲染节点与编辑框一致。K8s 导图 137 个节点检查无拆词、无溢出；build / lint / test 8/8 通过。分支 `main`（已提交，已部署）。
 
-### 2026-10-31 sync：mvp-editor + minimap-live-highlight
-
-- 用户确认 FILE-02（系统对话框 + 真实磁盘读写）与 TXT-06（粘贴图片）手动检查正常，mvp-editor 最后一项验收勾上。
-- 需求并入 spec：[map.md](docs/specs/map.md) MAP-01〜06、[text.md](docs/specs/text.md) TXT-01〜06（TXT-04 为修改后的版本）、[file.md](docs/specs/file.md) FILE-01〜04。
-- 两个变更归档到 `docs/changes/archive/2026-10-31-*`；更新 feature-list（全部 ✅）、sdd-workflow §5、specs/README；open-questions T-002 备注改为部署后的现状。
-- 验证：build / lint / test 8/8 通过。
-- 分支：`feat/mvp-editor`（已提交），合并到 main（未推送）。
-
 | 日期 | 摘要 |
 |---|---|
+| 2026-10-31 | sync mvp-editor + minimap-live-highlight，生成 MAP / TXT / FILE spec（详见 history.md） |
 | 2026-10-31 | 部署到 S3 + CloudFront，修复首次访问白屏（详见 history.md） |
 | 2026-10-31 | minimap-live-highlight 实现：缩略图 + 代码块输入时高亮（详见 history.md） |
 | 2026-10-31 | mvp-editor 实现：第一版编辑器，补丁 + 浏览器逐条验证（详见 history.md） |

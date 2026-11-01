@@ -54,7 +54,7 @@ C 包括：错别字、注释、格式、不改行为的重构、依赖升级、
 | `MAP` | 导图结构、布局与编辑操作 | [`docs/specs/map.md`](specs/map.md) |
 | `TXT` | 节点内容与富文本 | [`docs/specs/text.md`](specs/text.md) |
 | `FILE` | 文件存取与导入 | [`docs/specs/file.md`](specs/file.md) |
-| `UI` | 界面语言 | `docs/specs/ui.md`（待 `/sync` 生成） |
+| `UI` | 界面语言 | [`docs/specs/ui.md`](specs/ui.md) |
 
 编号在领域内递增，**废止的编号永不复用**。
 

@@ -4,6 +4,14 @@
 
 ## Completed
 
+### 2026-10-31 sync：mvp-editor + minimap-live-highlight
+
+- 用户确认 FILE-02（系统对话框 + 真实磁盘读写）与 TXT-06（粘贴图片）手动检查正常，mvp-editor 最后一项验收勾上。
+- 需求并入 spec：[map.md](docs/specs/map.md) MAP-01〜06、[text.md](docs/specs/text.md) TXT-01〜06（TXT-04 为修改后的版本）、[file.md](docs/specs/file.md) FILE-01〜04。
+- 两个变更归档到 `docs/changes/archive/2026-10-31-*`；更新 feature-list（全部 ✅）、sdd-workflow §5、specs/README；open-questions T-002 备注改为部署后的现状。
+- 验证：build / lint / test 8/8 通过。
+- 分支：`feat/mvp-editor`（已提交），合并到 main（未推送）。
+
 ### 2026-10-31 部署到 S3 + CloudFront
 
 - 复用账号里已有的公开桶 `my-htmls-yeah` 与 CloudFront `d3s7em05htk44d.cloudfront.net`（已强制 HTTPS），放进 `mindmap/` 前缀，不动桶里其他内容。用 `--base=./` 构建；`assets/` 长缓存，`index.html` 设 `no-cache`，更新时不必清 CloudFront 缓存。
