@@ -8,6 +8,7 @@
 
 ## Current Status
 
+- 2026-11-01：[autosave-draft](docs/changes/autosave-draft/proposal.md)（浏览器内自动保存与恢复）已实现并部署，在分支 `feat/autosave-draft`（已提交，未合并到 main）。待：用户在线上确认真实文件读写、`/sync`、合并。
 - 2026-10-31：Phase 1 完成。[mvp-editor](docs/changes/archive/2026-10-31-mvp-editor/proposal.md) 与 [minimap-live-highlight](docs/changes/archive/2026-10-31-minimap-live-highlight/proposal.md) 已 sync 进 [docs/specs/](docs/specs/README.md) 并归档，已部署到线上（见上），`feat/mvp-editor` 合并到 main（未推送）。没有进行中的变更。
 
 ## Blockers
@@ -20,6 +21,14 @@
 - [ ] Phase 2：按实际使用反馈处理 open-questions §2（待定）
 
 ## Completed
+
+### 2026-11-01 autosave-draft 实现
+
+- 新增 `draftStore.ts`（IndexedDB，单连接复用）：当前导图的内容、文件名、文件句柄、文件修改时间、未保存标记。启动时先读草稿再创建导图；每次数据变化立即写入。
+- 去掉离开确认（FILE-03）；Cmd+S 写回前请求写权限并比较修改时间，文件被外部改过则确认（FILE-06）。
+- 实现中发现：页面关闭时才开始的 IndexedDB 写入不可靠（实测连不带句柄的简单写入也时有丢失），原计划「防抖 1 秒 + 关闭时写入」会丢最后 1 秒的修改，改为立即写入，proposal 设计要点 3 与 FILE-05 文字已同步修改。
+- 验证：tsc / lint / test 10/10（新增草稿读写 2 项，devDependency `fake-indexeddb` 6.2.6）。内置浏览器中：编辑后立刻刷新内容与标记都在；打开文件 → 修改 → 立刻刷新 → Cmd+S 无对话框写回原文件；外部改文件后 Cmd+S 弹确认（取消不写、确认覆盖、之后不再弹）；7.4MB 图片自动保存并恢复；新建 / 撤销 / 另存为回归正常。文件对话框以浏览器沙盒文件代替。
+- 分支：`feat/autosave-draft`（已提交，已部署）。
 
 ### 2026-11-01 节点文字按单词换行（C 类）
 
@@ -49,15 +58,8 @@
 - jsdom 降到 29.1.1：30.x 要求 Node 24.15 以上，用户的 Node 24.7 安装时会报 EBADENGINE。
 - 分支：`feat/mvp-editor`（已提交）。
 
-### 2026-10-31 mvp-editor 实现
-
-- `frontend/`：Vite 8 + React 19 + TypeScript 7，依赖精确锁版本；simple-mind-map 0.14.0-fix.3 + patch-package 补丁（格式白名单、代码块换行继承缩进、复制保留换行），全新 `npm ci` 时自动应用。
-- 验证：`npm run build` / `npm run lint` 通过，`npm test` 8/8 通过。浏览器中验证了 MAP-01〜05、TXT-01〜06、FILE-01〜04（七种格式 + 链接 + 图片的保存重开往返；新增 / 改文字 / 删除 / 改格式 / 拖拽的撤销）。用户的 K8s.xmind 导入后 96 个主题与原文件一致；把其中 YAML 节点转成 yaml 代码块后，保存 → 重开 → 再编辑一轮，格式无损。
-- 验证中发现并修复：保存失败时没有提示（已补上，与打开 / 导入一致）；编辑态 Tab 在代码块里会结束编辑（随后 Shift+Tab 还会误建父节点）；点击格式工具栏会结束编辑；库默认没有空格进入编辑、Esc 结束编辑；触控板平移步长过大；导入后未显示未保存标记；编辑框里代码块是深色，和渲染不一致。
-- FILE-04 的验证数据从「106」改为文件里的实际主题数 96（截图里的 XMind 显示 106，用户提供的文件里是 96）。
-- 分支：`feat/mvp-editor`（已提交）。
-
 | 日期 | 摘要 |
 |---|---|
+| 2026-10-31 | mvp-editor 实现：第一版编辑器，补丁 + 浏览器逐条验证（详见 history.md） |
 | 2026-10-31 | 项目启动与文档骨架：确定方向、spike、建立 docs 骨架（详见 history.md） |
 | — | 更早的条目滚动到 [docs/history.md](docs/history.md) |

@@ -11,3 +11,4 @@
 | 本地文件打开 / 保存（写回原文件） | ✅ | [FILE-01〜03](specs/file.md) | |
 | 导入 .xmind | ✅ | [FILE-04](specs/file.md) | |
 | 缩略图 | ✅ | [MAP-06](specs/map.md) | |
+| 浏览器内自动保存与恢复 | 🚧 | — | [autosave-draft](changes/autosave-draft/proposal.md) |

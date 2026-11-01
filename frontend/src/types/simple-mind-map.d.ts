@@ -100,3 +100,8 @@ interface Window {
   showOpenFilePicker(options?: { types?: FilePickerAcceptType[]; multiple?: boolean }): Promise<FileSystemFileHandle[]>
   showSaveFilePicker(options?: { suggestedName?: string; types?: FilePickerAcceptType[] }): Promise<FileSystemFileHandle>
 }
+
+interface FileSystemHandle {
+  queryPermission(descriptor?: { mode?: 'read' | 'readwrite' }): Promise<PermissionState>
+  requestPermission(descriptor?: { mode?: 'read' | 'readwrite' }): Promise<PermissionState>
+}

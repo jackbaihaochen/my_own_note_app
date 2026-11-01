@@ -19,6 +19,12 @@
 - **2026-10-31（minimap-live-highlight）编辑态也高亮：用 Quill 自带的 syntax 模块，保存前清掉它的标记。** 仍坚持上一条「高亮不写进数据」：syntax 模块在编辑框里插入的 `.ql-token` 和语言 `<select>`，在 `beforeHideRichTextEdit` 中去掉后才保存，数据格式不变。补丁因此多两处：白名单加 `code-token`、modules 从插件参数读 `syntax`；Shift+Enter 继承缩进改为按整行取（高亮把一行拆成多个片段）。渲染后的上色仍由我们自己的 `highlightCodeBlocks` 负责。
 - **2026-10-31 导入的纯文本转为「每行一个 `<p>`、前导空格转 `&nbsp;`」的富文本。** 库默认把纯文本包成单个 `<p>`，换行和缩进都会丢失（XMind 里的 YAML 节点会被压成一行）。
 
+## 浏览器草稿（autosave-draft）
+
+- **2026-11-01 自动保存用 IndexedDB，不用 localStorage。** localStorage 每个网站约 5MB、只能存字符串；导图内嵌图片很容易超限（实测一张截图级大图就 7MB）。IndexedDB 额度大，还能存文件句柄，恢复后 Cmd+S 仍写回原文件。数据库名 `my-own-xmind`，因为线上域名还放着桶里的其他页面。
+- **2026-11-01 每次数据变化后立即写入草稿，不防抖、不依赖页面关闭事件。** 实测在 pagehide / visibilitychange 里才开始的 IndexedDB 写入有时落不了盘（是否成功取决于和页面卸载的竞争），刷新前 1 秒内的修改会丢。写入进行中又有变化时只补写一次最新状态，避免拖拽等连续操作堆积写入。
+- **2026-11-01 浏览器草稿只是安全网，本地文件仍是正式存档。** 未保存标记表示「还没存进文件」；去掉离开确认。写回文件前比较修改时间，防止覆盖其他电脑经文件同步过来的修改。
+
 ## 部署
 
 - **2026-10-31 部署到账号里已有的 S3 公开桶 + CloudFront 的 `mindmap/` 子目录。** 地址 https://d3s7em05htk44d.cloudfront.net/mindmap/ 。CloudFront 提供 File System Access API 必需的 HTTPS；复用现有设施，不新建桶和分发。页面是公开的，但导图只存在用户本地，不上传。用 `--base=./` 构建以适配子目录；`index.html` 设 `no-cache`、带哈希的 `assets/` 设长缓存，更新时不需要清 CloudFront 缓存。
