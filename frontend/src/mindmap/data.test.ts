@@ -1,11 +1,11 @@
 import JSZip from 'jszip'
 import xmind from 'simple-mind-map/src/parse/xmind.js'
 import { describe, expect, it } from 'vitest'
-import { importedTreeToMap, newMapData, parseMapFile, plainTextToRichHtml, serializeMap, SMM_VERSION } from './data'
+import { importedTreeToMap, InvalidMapFileError, newMapData, parseMapFile, plainTextToRichHtml, serializeMap, SMM_VERSION } from './data'
 
 describe('map file (FILE-01)', () => {
   it('round-trips through serialize / parse and keeps smmVersion', () => {
-    const data = newMapData()
+    const data = newMapData('Central Topic')
     data.root.children = [{ data: { text: '<p>run <code>kubectl</code></p>', richText: true }, children: [] }]
     const parsed = parseMapFile(serializeMap(data))
     expect(parsed).toEqual(data)
@@ -19,13 +19,13 @@ describe('map file (FILE-01)', () => {
   })
 
   it('rejects data without a root node', () => {
-    expect(() => parseMapFile('{"foo":1}')).toThrow()
+    expect(() => parseMapFile('{"foo":1}')).toThrow(InvalidMapFileError)
   })
 })
 
 describe('new map (MAP-01)', () => {
   it('uses the right-growing logical structure layout', () => {
-    expect(newMapData().layout).toBe('logicalStructure')
+    expect(newMapData('Central Topic').layout).toBe('logicalStructure')
   })
 })
 

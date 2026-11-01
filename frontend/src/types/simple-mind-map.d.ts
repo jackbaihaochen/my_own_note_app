@@ -57,6 +57,7 @@ declare module 'simple-mind-map' {
     execCommand(name: string, ...args: unknown[]): void
     getData(withConfig?: boolean): any
     setFullData(data: unknown): void
+    updateConfig(opt: Record<string, unknown>): void
     destroy(): void
   }
 }

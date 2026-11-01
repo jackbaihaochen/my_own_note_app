@@ -1,15 +1,16 @@
 import { FILE_EXTENSION } from '../mindmap/data'
 
-const MAP_TYPES = [{ description: '思维导图', accept: { 'application/json': [FILE_EXTENSION] } }]
+// `description` labels the file type in the picker, in the current UI language
+const mapTypes = (description: string) => [{ description, accept: { 'application/json': [FILE_EXTENSION] } }]
 const XMIND_TYPES = [{ description: 'XMind', accept: { 'application/octet-stream': ['.xmind'] } }]
 
 const isAbort = (e: unknown) => e instanceof DOMException && e.name === 'AbortError'
 
 // Each picker resolves to null when the user cancels the dialog.
 
-export async function pickMapFile(): Promise<{ handle: FileSystemFileHandle; text: string; lastModified: number } | null> {
+export async function pickMapFile(description: string): Promise<{ handle: FileSystemFileHandle; text: string; lastModified: number } | null> {
   try {
-    const [handle] = await window.showOpenFilePicker({ types: MAP_TYPES })
+    const [handle] = await window.showOpenFilePicker({ types: mapTypes(description) })
     const file = await handle.getFile()
     return { handle, text: await file.text(), lastModified: file.lastModified }
   } catch (e) {
@@ -28,9 +29,9 @@ export async function pickXmindFile(): Promise<File | null> {
   }
 }
 
-export async function pickSaveTarget(suggestedName: string): Promise<FileSystemFileHandle | null> {
+export async function pickSaveTarget(suggestedName: string, description: string): Promise<FileSystemFileHandle | null> {
   try {
-    return await window.showSaveFilePicker({ suggestedName, types: MAP_TYPES })
+    return await window.showSaveFilePicker({ suggestedName, types: mapTypes(description) })
   } catch (e) {
     if (isAbort(e)) return null
     throw e

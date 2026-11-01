@@ -12,3 +12,4 @@
 | 导入 .xmind | ✅ | [FILE-04](specs/file.md) | |
 | 缩略图 | ✅ | [MAP-06](specs/map.md) | |
 | 浏览器内自动保存与恢复 | ✅ | [FILE-05、FILE-06](specs/file.md) | |
+| 界面中英双语与语言设置 | 🚧 | — | [ui-language](changes/ui-language/proposal.md) |

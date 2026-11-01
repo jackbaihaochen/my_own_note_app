@@ -13,21 +13,35 @@ import {
   readAsDataUrl,
   writeFile,
 } from './file/fileAccess'
-import { createMindMap } from './mindmap/createMindMap'
-import { FILE_EXTENSION, importedTreeToMap, newMapData, parseMapFile, serializeMap, type MapFile } from './mindmap/data'
+import { LANGUAGES, loadLang, messages, saveLang, type Lang } from './i18n'
+import { createMindMap, topicTextConfig } from './mindmap/createMindMap'
+import {
+  FILE_EXTENSION,
+  importedTreeToMap,
+  InvalidMapFileError,
+  newMapData,
+  parseMapFile,
+  serializeMap,
+  type MapFile,
+} from './mindmap/data'
 
-const UNTITLED = '未命名'
 const MAX_IMAGE_WIDTH = 300
+// Drafts saved before the UI was localized stored this placeholder as an untitled map's name
+const LEGACY_UNTITLED = '未命名'
 
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null)
   const mindMapRef = useRef<MindMap | null>(null)
   const [mindMap, setMindMap] = useState<MindMap | null>(null)
-  const [fileName, setFileName] = useState(UNTITLED)
+  const [lang, setLang] = useState<Lang>(loadLang)
+  const t = messages[lang]
+  // '' = untitled; shown as `t.untitled` so it follows the UI language
+  const [fileName, setFileName] = useState('')
   const [dirty, setDirty] = useState(false)
   const handleRef = useRef<FileSystemFileHandle | null>(null)
   // Mirrors of state the browser draft needs, readable from event handlers
-  const fileNameRef = useRef(UNTITLED)
+  const fileNameRef = useRef('')
+  const tRef = useRef(t)
   const fileModifiedRef = useRef<number | null>(null)
   // Dirty = node data differs from the snapshot taken after the last load / save
   const baselineRef = useRef<string | null>(null)
@@ -59,7 +73,7 @@ export default function App() {
       .catch(e => {
         if (draftErrorShownRef.current) return
         draftErrorShownRef.current = true
-        window.alert(`自动保存到浏览器失败：${(e as Error).message}`)
+        window.alert(tRef.current.draftSaveFailed((e as Error).message))
       })
       .finally(() => {
         write.busy = false
@@ -93,13 +107,15 @@ export default function App() {
 
     const start = (draft: Draft | null) => {
       if (disposed) return
-      mm = createMindMap(el, draft ? parseMapFile(draft.text) : newMapData())
+      const t = tRef.current
+      mm = createMindMap(el, draft ? parseMapFile(draft.text) : newMapData(t.rootTopic), t)
       mindMapRef.current = mm
       if (draft) {
+        const name = draft.name === LEGACY_UNTITLED ? '' : draft.name
         handleRef.current = draft.handle
         fileModifiedRef.current = draft.fileModified
-        fileNameRef.current = draft.name
-        setFileName(draft.name)
+        fileNameRef.current = name
+        setFileName(name)
       }
       resetBaselineAfterRender(mm, draft?.dirty)
       mm.on('data_change', () => {
@@ -140,20 +156,20 @@ export default function App() {
     [resetBaselineAfterRender],
   )
 
-  const confirmDiscard = () => !dirty || window.confirm('当前导图有未保存的修改，确定放弃吗？')
+  const confirmDiscard = () => !dirty || window.confirm(t.discardChanges)
 
   const newMap = () => {
-    if (confirmDiscard()) loadMap(newMapData(), UNTITLED, null)
+    if (confirmDiscard()) loadMap(newMapData(t.rootTopic), '', null)
   }
 
   const openMap = async () => {
     if (!confirmDiscard()) return
-    const picked = await pickMapFile()
+    const picked = await pickMapFile(t.mindMapFileType)
     if (!picked) return
     try {
       loadMap(parseMapFile(picked.text), picked.handle.name, picked.handle, false, picked.lastModified)
     } catch (e) {
-      window.alert(`打开失败：${(e as Error).message}`)
+      window.alert(t.openFailed(e instanceof InvalidMapFileError ? t.invalidMapFile : (e as Error).message))
     }
   }
 
@@ -165,7 +181,7 @@ export default function App() {
       const root = await xmind.parseXmindFile(file)
       loadMap(importedTreeToMap(root), file.name.replace(/\.xmind$/, ''), null, true)
     } catch (e) {
-      window.alert(`导入失败：${(e as Error).message}`)
+      window.alert(t.importFailed((e as Error).message))
     }
   }
 
@@ -173,8 +189,8 @@ export default function App() {
     const mm = mindMapRef.current!
     let handle = handleRef.current
     if (!handle || saveAs) {
-      const base = fileName.endsWith(FILE_EXTENSION) ? fileName : fileName + FILE_EXTENSION
-      handle = await pickSaveTarget(base)
+      const name = fileName || t.untitled
+      handle = await pickSaveTarget(name.endsWith(FILE_EXTENSION) ? name : name + FILE_EXTENSION, t.mindMapFileType)
       if (!handle) return
     }
     try {
@@ -185,14 +201,14 @@ export default function App() {
         if (
           known !== null &&
           (await fileLastModified(handle)) > known &&
-          !window.confirm(`「${handle.name}」在上次打开或保存之后被其他程序修改过，确定用当前内容覆盖吗？`)
+          !window.confirm(t.fileChangedElsewhere(handle.name))
         )
           return
       }
       await writeFile(handle, serializeMap(mm.getData(true)))
       fileModifiedRef.current = await fileLastModified(handle)
     } catch (e) {
-      window.alert(`保存失败：${(e as Error).message}`)
+      window.alert(t.saveFailed((e as Error).message))
       return
     }
     handleRef.current = handle
@@ -207,7 +223,7 @@ export default function App() {
     const mm = mindMapRef.current!
     const node = mm.renderer.activeNodeList[0]
     if (!node) {
-      window.alert('请先选中一个节点')
+      window.alert(t.selectNodeFirst)
       return
     }
     const input = document.createElement('input')
@@ -232,11 +248,23 @@ export default function App() {
     input.click()
   }
 
-  // Keep the latest handlers reachable from the one-time key listener
+  // Keep the latest handlers and texts reachable from one-time listeners
   const actions = useRef({ openMap, save })
   useEffect(() => {
     actions.current = { openMap, save }
+    tRef.current = t
   })
+
+  // UI-02: switching language takes effect at once; existing map content is left as it is
+  useEffect(() => {
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'
+    mindMap?.updateConfig(topicTextConfig(messages[lang]))
+  }, [lang, mindMap])
+
+  const changeLang = (next: Lang) => {
+    setLang(next)
+    saveLang(next)
+  }
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -266,27 +294,40 @@ export default function App() {
 
   useEffect(() => {
     // No leave-page prompt: the browser draft keeps unsaved edits (FILE-03 / FILE-05)
-    document.title = `${dirty ? '● ' : ''}${fileName}`
-  }, [dirty, fileName])
+    document.title = `${dirty ? '● ' : ''}${fileName || t.untitled}`
+  }, [dirty, fileName, t])
 
   return (
     <div className="app">
       <header className="topbar">
         <span className="file-name">
-          {fileName}
-          {dirty && <span className="dirty" title="未保存"> ●</span>}
+          {fileName || t.untitled}
+          {dirty && <span className="dirty" title={t.unsaved}> ●</span>}
         </span>
-        <button onClick={newMap}>新建</button>
-        <button onClick={openMap} title="⌘O">打开</button>
-        <button onClick={() => save(false)} title="⌘S">保存</button>
-        <button onClick={() => save(true)} title="⇧⌘S">另存为</button>
-        <button onClick={importXmind}>导入 XMind</button>
+        <button onClick={newMap}>{t.newMap}</button>
+        <button onClick={openMap} title="⌘O">
+          {t.open}
+        </button>
+        <button onClick={() => save(false)} title="⌘S">
+          {t.save}
+        </button>
+        <button onClick={() => save(true)} title="⇧⌘S">
+          {t.saveAs}
+        </button>
+        <button onClick={importXmind}>{t.importXmind}</button>
         <span className="sep" />
-        <button onClick={insertImage}>插入图片</button>
+        <button onClick={insertImage}>{t.insertImage}</button>
+        <select className="lang-select" title={t.language} value={lang} onChange={e => changeLang(e.target.value as Lang)}>
+          {LANGUAGES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
       </header>
       <div className="canvas" ref={containerRef} />
-      {mindMap && <FormatToolbar mindMap={mindMap} />}
-      {mindMap && <MiniMapPanel mindMap={mindMap} />}
+      {mindMap && <FormatToolbar mindMap={mindMap} t={t} />}
+      {mindMap && <MiniMapPanel mindMap={mindMap} t={t} />}
     </div>
   )
 }

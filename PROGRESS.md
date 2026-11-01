@@ -8,6 +8,7 @@
 
 ## Current Status
 
+- 2026-11-01：[ui-language](docs/changes/ui-language/proposal.md)（界面中英双语与语言设置）已实现并部署，在分支 `feat/ui-language`（已提交，未合并到 main）。待：线上确认、`/sync`、合并。main 上 autosave-draft 的 2 个提交尚未推送。
 - 2026-11-01：[autosave-draft](docs/changes/archive/2026-11-01-autosave-draft/proposal.md)（浏览器内自动保存与恢复）已上线、sync 进 [file.md](docs/specs/file.md) 并归档，`feat/autosave-draft` 合并到 main（未推送）。没有进行中的变更。
 - 2026-10-31：Phase 1 完成。[mvp-editor](docs/changes/archive/2026-10-31-mvp-editor/proposal.md) 与 [minimap-live-highlight](docs/changes/archive/2026-10-31-minimap-live-highlight/proposal.md) 已 sync 进 [docs/specs/](docs/specs/README.md) 并归档，已部署到线上（见上），`feat/mvp-editor` 已合并到 main 并推送。
 
@@ -21,6 +22,13 @@
 - [ ] Phase 2：按实际使用反馈处理 open-questions §2（待定）
 
 ## Completed
+
+### 2026-11-01 ui-language 实现
+
+- 新增 `src/i18n.ts`：英 / 中词表（类型保证条目一致）、按浏览器语言选默认、localStorage 记住选择。顶栏右侧加语言切换。顶栏、格式工具栏、缩略图、全部弹窗、文件类型说明、新建导图与新插入节点的默认文字（库 `updateConfig`）都随语言切换；`<html lang>` 跟随，`index.html` 静态标题改为 "Mind Map"。
+- 未命名导图改存空串、显示时按语言；兼容旧草稿里的「未命名」。`parseMapFile` 改抛 `InvalidMapFileError`，提示文字由界面按语言显示。
+- 验证：tsc / lint / test 12/12（新增词表一致、浏览器语言判断 2 项）。内置浏览器（en-US）逐项确认 UI-01、UI-02 与回归；搜索确认词表外无界面中文字符串。
+- 分支：`feat/ui-language`（已提交，已部署）。
 
 ### 2026-11-01 sync：autosave-draft
 
@@ -48,15 +56,9 @@
 - 验证：build / lint / test 8/8 通过。
 - 分支：`feat/mvp-editor`（已提交），合并到 main（未推送）。
 
-### 2026-10-31 部署到 S3 + CloudFront
-
-- 复用账号里已有的公开桶 `my-htmls-yeah` 与 CloudFront `d3s7em05htk44d.cloudfront.net`（已强制 HTTPS），放进 `mindmap/` 前缀，不动桶里其他内容。用 `--base=./` 构建；`assets/` 长缓存，`index.html` 设 `no-cache`，更新时不必清 CloudFront 缓存。
-- 发现并修复：首次访问（无缓存）时白屏。生产构建里 JS 可能先于样式表生效执行，画布容器为 0×0，库直接抛错。改为用 `ResizeObserver` 等容器有尺寸后再创建导图。用旧 / 新两版 JS 在「样式表延迟 800ms」的条件下对照：旧版报错白屏，新版正常。
-- 验证：tsc / lint / test 8/8 通过；线上页面 HTTPS、File System Access API 可用，新建子主题、输入、未保存标记、缩略图正常。
-- 分支：`feat/mvp-editor`（已提交）。
-
 | 日期 | 摘要 |
 |---|---|
+| 2026-10-31 | 部署到 S3 + CloudFront，修复首次访问白屏（详见 history.md） |
 | 2026-10-31 | minimap-live-highlight 实现：缩略图 + 代码块输入时高亮（详见 history.md） |
 | 2026-10-31 | mvp-editor 实现：第一版编辑器，补丁 + 浏览器逐条验证（详见 history.md） |
 | 2026-10-31 | 项目启动与文档骨架：确定方向、spike、建立 docs 骨架（详见 history.md） |

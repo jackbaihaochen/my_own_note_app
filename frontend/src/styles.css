@@ -45,7 +45,12 @@ body,
   color: var(--accent);
 }
 
+.topbar .lang-select {
+  margin-left: auto;
+}
+
 .topbar button,
+.topbar select,
 .format-toolbar button,
 .format-toolbar select {
   border: 1px solid var(--border);

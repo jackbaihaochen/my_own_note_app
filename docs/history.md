@@ -4,6 +4,13 @@
 
 ## Completed
 
+### 2026-10-31 部署到 S3 + CloudFront
+
+- 复用账号里已有的公开桶 `my-htmls-yeah` 与 CloudFront `d3s7em05htk44d.cloudfront.net`（已强制 HTTPS），放进 `mindmap/` 前缀，不动桶里其他内容。用 `--base=./` 构建；`assets/` 长缓存，`index.html` 设 `no-cache`，更新时不必清 CloudFront 缓存。
+- 发现并修复：首次访问（无缓存）时白屏。生产构建里 JS 可能先于样式表生效执行，画布容器为 0×0，库直接抛错。改为用 `ResizeObserver` 等容器有尺寸后再创建导图。用旧 / 新两版 JS 在「样式表延迟 800ms」的条件下对照：旧版报错白屏，新版正常。
+- 验证：tsc / lint / test 8/8 通过；线上页面 HTTPS、File System Access API 可用，新建子主题、输入、未保存标记、缩略图正常。
+- 分支：`feat/mvp-editor`（已提交）。
+
 ### 2026-10-31 minimap-live-highlight 实现
 
 - 缩略图（MAP-06）：启用库的 MiniMap 插件，新组件 `MiniMapPanel`，支持平移联动、点击跳转、拖动视口框、收起 / 展开。

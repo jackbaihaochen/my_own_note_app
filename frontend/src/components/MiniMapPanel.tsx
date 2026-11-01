@@ -1,11 +1,12 @@
 import { useEffect, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import type MindMap from 'simple-mind-map'
 import type { MiniMapState } from 'simple-mind-map'
+import type { Messages } from '../i18n'
 
 const WIDTH = 220
 const HEIGHT = 140
 
-export function MiniMapPanel({ mindMap }: { mindMap: MindMap }) {
+export function MiniMapPanel({ mindMap, t }: { mindMap: MindMap; t: Messages }) {
   const [open, setOpen] = useState(true)
   const [state, setState] = useState<MiniMapState | null>(null)
 
@@ -29,8 +30,8 @@ export function MiniMapPanel({ mindMap }: { mindMap: MindMap }) {
 
   if (!open) {
     return (
-      <button className="minimap-toggle" title="显示缩略图" onClick={() => setOpen(true)}>
-        缩略图
+      <button className="minimap-toggle" title={t.showMinimap} onClick={() => setOpen(true)}>
+        {t.minimap}
       </button>
     )
   }
@@ -82,7 +83,7 @@ export function MiniMapPanel({ mindMap }: { mindMap: MindMap }) {
           </>
         )}
       </div>
-      <button className="minimap-close" title="收起缩略图" onClick={() => setOpen(false)}>
+      <button className="minimap-close" title={t.hideMinimap} onClick={() => setOpen(false)}>
         ×
       </button>
     </div>

@@ -14,13 +14,13 @@ export interface MapFile {
   view: unknown
 }
 
-export function newMapData(): MapFile {
-  return {
-    layout: 'logicalStructure',
-    root: { data: { text: '<p>中心主题</p>', richText: true }, children: [], smmVersion: SMM_VERSION },
-    theme: { template: 'default', config: {} },
-    view: null,
-  }
+function mapWithRoot(root: NodeTree): MapFile {
+  return { layout: 'logicalStructure', root, theme: { template: 'default', config: {} }, view: null }
+}
+
+// `rootText` is the central topic's text in the current UI language
+export function newMapData(rootText: string): MapFile {
+  return mapWithRoot({ data: { text: `<p>${rootText}</p>`, richText: true }, children: [], smmVersion: SMM_VERSION })
 }
 
 export function ensureVersion(data: MapFile): MapFile {
@@ -32,10 +32,13 @@ export function serializeMap(data: MapFile): string {
   return JSON.stringify(ensureVersion(data), null, 2)
 }
 
+// Thrown for JSON that isn't a map; the UI shows its own localized message for it
+export class InvalidMapFileError extends Error {}
+
 export function parseMapFile(text: string): MapFile {
   const data = JSON.parse(text)
   if (!data || typeof data !== 'object' || !data.root?.data) {
-    throw new Error('不是有效的导图文件')
+    throw new InvalidMapFileError('not a mind map file')
   }
   return ensureVersion({ layout: 'logicalStructure', theme: { template: 'default', config: {} }, view: null, ...data })
 }
@@ -66,5 +69,5 @@ export function importedTreeToMap(root: NodeTree): MapFile {
   }
   walk(root)
   root.smmVersion = SMM_VERSION
-  return { ...newMapData(), root }
+  return mapWithRoot(root)
 }

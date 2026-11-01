@@ -9,7 +9,7 @@ describe('draftStore', () => {
   })
 
   it('reads back the last saved draft', async () => {
-    const first: Draft = { text: serializeMap(newMapData()), name: '未命名', handle: null, fileModified: null, dirty: true }
+    const first: Draft = { text: serializeMap(newMapData('Central Topic')), name: '未命名', handle: null, fileModified: null, dirty: true }
     const second: Draft = { ...first, name: 'notes.mindmap.json', fileModified: 1730000000000, dirty: false }
     await saveDraft(first)
     await saveDraft(second)

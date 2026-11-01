@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type MindMap from 'simple-mind-map'
 import type Quill from 'quill'
+import type { Messages } from '../i18n'
 import { CODE_LANGUAGES } from '../mindmap/highlight'
 
 const COLORS = ['#000000', '#e03131', '#f08c00', '#2f9e44', '#1971c2', '#9c36b5', '#868e96']
@@ -29,7 +30,7 @@ function setCodeBlockLanguage(quill: Quill, language: string) {
   ;(quill.getModule('syntax') as { highlight(blot: unknown, force: boolean): void } | undefined)?.highlight(container, true)
 }
 
-export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
+export function FormatToolbar({ mindMap, t }: { mindMap: MindMap; t: Messages }) {
   const [rect, setRect] = useState<DOMRect | null>(null)
   const [formats, setFormats] = useState<Formats>({})
   const toolbarRef = useRef<HTMLDivElement>(null)
@@ -92,16 +93,16 @@ export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
         if (!(e.target instanceof HTMLSelectElement)) e.preventDefault()
       }}
     >
-      <button className={formats.bold ? 'on' : ''} title="粗体 ⌘B" onClick={() => toggle('bold')}>
+      <button className={formats.bold ? 'on' : ''} title={t.bold} onClick={() => toggle('bold')}>
         <b>B</b>
       </button>
-      <button className={formats.italic ? 'on' : ''} title="斜体 ⌘I" onClick={() => toggle('italic')}>
+      <button className={formats.italic ? 'on' : ''} title={t.italic} onClick={() => toggle('italic')}>
         <i>I</i>
       </button>
-      <button className={formats.underline ? 'on' : ''} title="下划线 ⌘U" onClick={() => toggle('underline')}>
+      <button className={formats.underline ? 'on' : ''} title={t.underline} onClick={() => toggle('underline')}>
         <u>U</u>
       </button>
-      <button className={formats.strike ? 'on' : ''} title="删除线" onClick={() => toggle('strike')}>
+      <button className={formats.strike ? 'on' : ''} title={t.strike} onClick={() => toggle('strike')}>
         <s>S</s>
       </button>
       <span className="sep" />
@@ -115,11 +116,11 @@ export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
         />
       ))}
       <select
-        title="字号"
+        title={t.fontSize}
         value={typeof formats.size === 'string' ? formats.size : ''}
         onChange={e => run(q => q.format('size', e.target.value || false, 'user'))}
       >
-        <option value="">字号</option>
+        <option value="">{t.fontSize}</option>
         {SIZES.map(size => (
           <option key={size} value={size}>
             {parseInt(size)}
@@ -127,12 +128,12 @@ export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
         ))}
       </select>
       <span className="sep" />
-      <button className={formats.code ? 'on' : ''} title="行内代码 ⌘E" onClick={() => run(toggleInlineCode)}>
+      <button className={formats.code ? 'on' : ''} title={t.inlineCode} onClick={() => run(toggleInlineCode)}>
         {'</>'}
       </button>
       <button
         className={inCodeBlock ? 'on' : ''}
-        title="代码块"
+        title={t.codeBlock}
         onClick={() =>
           run(q => {
             const range = q.getSelection(true)
@@ -143,8 +144,8 @@ export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
         {'{ }'}
       </button>
       {inCodeBlock && (
-        <select title="代码语言" value={codeLanguage} onChange={e => run(q => setCodeBlockLanguage(q, e.target.value))}>
-          <option value="plain">无高亮</option>
+        <select title={t.codeLanguage} value={codeLanguage} onChange={e => run(q => setCodeBlockLanguage(q, e.target.value))}>
+          <option value="plain">{t.plainCode}</option>
           {CODE_LANGUAGES.map(lang => (
             <option key={lang} value={lang}>
               {lang}
@@ -154,10 +155,10 @@ export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
       )}
       <button
         className={formats.link ? 'on' : ''}
-        title="链接"
+        title={t.link}
         onClick={() =>
           run(q => {
-            const url = window.prompt('链接地址', typeof formats.link === 'string' ? formats.link : 'https://')
+            const url = window.prompt(t.linkPrompt, typeof formats.link === 'string' ? formats.link : 'https://')
             if (url === null) return
             q.format('link', url.trim() || false, 'user')
           })
@@ -165,7 +166,7 @@ export function FormatToolbar({ mindMap }: { mindMap: MindMap }) {
       >
         🔗
       </button>
-      <button title="清除格式" onClick={() => run(q => {
+      <button title={t.clearFormat} onClick={() => run(q => {
         const range = q.getSelection(true)
         q.removeFormat(range.index, range.length, 'user')
       })}>

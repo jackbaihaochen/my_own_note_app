@@ -21,9 +21,20 @@ function isEditingCodeBlock(mindMap: MindMap) {
 
 const FONT ='-apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif'
 
-export function createMindMap(el: HTMLElement, data: MapFile): MindMap {
+// Default text for newly inserted topics, in the current UI language
+export interface TopicTexts {
+  mainTopic: string
+  subtopic: string
+}
+
+export function topicTextConfig({ mainTopic, subtopic }: TopicTexts) {
+  return { defaultInsertSecondLevelNodeText: mainTopic, defaultInsertBelowSecondLevelNodeText: subtopic }
+}
+
+export function createMindMap(el: HTMLElement, data: MapFile, topicTexts: TopicTexts): MindMap {
   const mindMap = new MindMap({
     el,
+    ...topicTextConfig(topicTexts),
     data: data.root,
     layout: data.layout,
     theme: data.theme.template,
